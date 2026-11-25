@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f6fb">
+  <title>Online Voting System</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: #f4f6fb;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 8% 0%, rgba(108, 99, 255, .11), transparent 34rem),
+        #f4f6fb;
+    }
+
+    button { font: inherit; }
+
+    .page {
+      width: min(100% - 32px, 960px);
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 56px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 15px;
+      font-weight: 750;
+      letter-spacing: -.02em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 12px;
+      background: #6558e8;
+      color: white;
+      font-size: 19px;
+    }
+
+    .demo-badge {
+      padding: 7px 11px;
+      border: 1px solid #e3e6ef;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .7);
+      color: #626b7e;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    main { max-width: 680px; margin: 0 auto; }
+
+    .intro { margin-bottom: 28px; text-align: center; }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #6558e8;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 46px);
+      letter-spacing: -.055em;
+      line-height: 1.1;
+    }
+
+    .intro-copy {
+      max-width: 470px;
+      margin: 13px auto 0;
+      color: #687186;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .ballot {
+      padding: clamp(20px, 5vw, 34px);
+      border: 1px solid #e8eaf1;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, .92);
+      box-shadow: 0 18px 55px rgba(32, 39, 68, .08);
+    }
+
+    .ballot-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    h2 { margin: 0; font-size: 17px; letter-spacing: -.02em; }
+
+    .instruction { color: #82899a; font-size: 12px; }
+
+    .choices { display: grid; gap: 11px; }
+
+    .choice {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 70px;
+      padding: 12px 16px;
+      border: 1px solid #e6e8f0;
+      border-radius: 14px;
+      background: white;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease, transform .16s ease;
+    }
+
+    .choice:hover { transform: translateY(-1px); border-color: #b7b0ff; }
+    .choice:has(input:checked) { border-color: #7468ef; background: #f8f7ff; }
+    .choice:focus-within { outline: 3px solid rgba(101, 88, 232, .2); outline-offset: 2px; }
+
+    .choice input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: #6558e8;
+      flex: 0 0 auto;
+    }
+
+    .avatar {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 13px;
+      background: #eeecff;
+      color: #574bd4;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .choice:nth-child(2) .avatar { background: #e7f6f1; color: #21866a; }
+    .choice:nth-child(3) .avatar { background: #fff1e5; color: #b86a25; }
+    .choice:nth-child(4) .avatar { background: #e8f1ff; color: #3970bb; }
+
+    .choice-name { font-size: 15px; font-weight: 700; }
+
+    .submit {
+      width: 100%;
+      min-height: 50px;
+      margin-top: 20px;
+      border: 0;
+      border-radius: 12px;
+      background: #6558e8;
+      color: white;
+      font-weight: 750;
+      cursor: pointer;
+      transition: background .16s ease, transform .16s ease;
+    }
+
+    .submit:hover { transform: translateY(-1px); background: #5549d0; }
+    .submit:focus-visible { outline: 3px solid rgba(101, 88, 232, .35); outline-offset: 3px; }
+    .submit:disabled { background: #a4a0cb; cursor: not-allowed; transform: none; }
+
+    .message {
+      min-height: 22px;
+      margin: 13px 0 0;
+      color: #287c5b;
+      font-size: 13px;
+      font-weight: 650;
+      text-align: center;
+    }
+
+    .results {
+      margin-top: 22px;
+      padding-top: 21px;
+      border-top: 1px solid #eceef4;
+    }
+
+    .results-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .total { color: #82899a; font-size: 12px; }
+    .result-row + .result-row { margin-top: 13px; }
+
+    .result-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+      color: #525c70;
+      font-size: 12px;
+    }
+
+    .result-label strong { color: #273148; }
+
+    .track {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #eff0f5;
+    }
+
+    .bar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: #7468ef;
+      transition: width .3s ease;
+    }
+
+    .result-row:nth-child(3) .bar { background: #52b79a; }
+    .result-row:nth-child(4) .bar { background: #efa15d; }
+    .result-row:nth-child(5) .bar { background: #6fa0e4; }
+
+    .notice {
+      margin: 18px 0 0;
+      color: #8a91a1;
+      font-size: 11px;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    footer {
+      margin-top: 28px;
+      color: #9298a7;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 520px) {
+      .page { padding-top: 20px; }
+      .topbar { margin-bottom: 42px; }
+      .instruction { max-width: 130px; text-align: right; }
+      .choice { min-height: 64px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✓</span> VoteNow</div>
+      <span class="demo-badge">Voting template</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Your voice matters</p>
+        <h1 id="page-title">Online Voting System</h1>
+        <p class="intro-copy">Choose one name below and cast your vote. Make your selection count!</p>
+      </section>
+
+      <form class="ballot" id="ballot">
+        <div class="ballot-heading">
+          <h2>Select one option</h2>
+          <span class="instruction">You can vote once on this device</span>
+        </div>
+
+        <div class="choices" role="radiogroup" aria-label="Voting choices">
+          <label class="choice">
+            <input type="radio" name="candidate" value="Devansh">
+            <span class="avatar" aria-hidden="true">DE</span>
+            <span class="choice-name">Devansh</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="candidate" value="Avikshit">
+            <span class="avatar" aria-hidden="true">AV</span>
+            <span class="choice-name">Avikshit</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="candidate" value="Aditya">
+            <span class="avatar" aria-hidden="true">AD</span>
+            <span class="choice-name">Aditya</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="candidate" value="Uday">
+            <span class="avatar" aria-hidden="true">UD</span>
+            <span class="choice-name">Uday</span>
+          </label>
+        </div>
+
+        <button class="submit" id="submit-vote" type="submit">Cast my vote</button>
+        <p class="message" id="message" role="status" aria-live="polite"></p>
+
+        <section class="results" aria-labelledby="results-title">
+          <div class="results-heading">
+            <h2 id="results-title">Live results</h2>
+            <span class="total" id="total-votes">0 votes</span>
+          </div>
+          <div id="result-list"></div>
+        </section>
+        <p class="notice">Demo only: votes and results are stored in this browser and are not secure or shared online. Use a trusted backend and appropriate safeguards for a real election.</p>
+      </form>
+    </main>
+
+    <footer>Thank you for taking part.</footer>
+  </div>
+
+  <script>
+    const candidates = ["Devansh", "Avikshit", "Aditya", "Uday"];
+    const storageKey = "votenow-demo-state";
+    const ballot = document.querySelector("#ballot");
+    const submitButton = document.querySelector("#submit-vote");
+    const message = document.querySelector("#message");
+    const resultList = document.querySelector("#result-list");
+    const totalVotes = document.querySelector("#total-votes");
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+        if (!saved || typeof saved !== "object" || !saved.votes || typeof saved.votes !== "object") {
+          return { votes: Object.fromEntries(candidates.map(name => [name, 0])), hasVoted: false };
+        }
+
+        const votes = Object.fromEntries(candidates.map(name => {
+          const value = saved.votes[name];
+          return [name, Number.isSafeInteger(value) && value >= 0 ? value : 0];
+        }));
+        return { votes, hasVoted: saved.hasVoted === true };
+      } catch {
+        return { votes: Object.fromEntries(candidates.map(name => [name, 0])), hasVoted: false };
+      }
+    }
+
+    let state = loadState();
+
+    function renderResults() {
+      const total = Object.values(state.votes).reduce((sum, votes) => sum + votes, 0);
+      totalVotes.textContent = `${total} ${total === 1 ? "vote" : "votes"}`;
+      resultList.replaceChildren();
+
+      for (const name of candidates) {
+        const count = state.votes[name];
+        const row = document.createElement("div");
+        row.className = "result-row";
+        const label = document.createElement("div");
+        label.className = "result-label";
+        const candidateName = document.createElement("strong");
+        candidateName.textContent = name;
+        const tally = document.createElement("span");
+        tally.textContent = `${count} · ${total ? Math.round(count / total * 100) : 0}%`;
+        label.append(candidateName, tally);
+
+        const track = document.createElement("div");
+        track.className = "track";
+        track.setAttribute("role", "progressbar");
+        track.setAttribute("aria-label", `${name} vote share`);
+        track.setAttribute("aria-valuemin", "0");
+        track.setAttribute("aria-valuemax", "100");
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        const percentage = total ? Math.round(count / total * 100) : 0;
+        bar.style.width = `${percentage}%`;
+        track.setAttribute("aria-valuenow", String(percentage));
+        track.append(bar);
+        row.append(label, track);
+        resultList.append(row);
+      }
+
+      submitButton.disabled = state.hasVoted;
+      if (state.hasVoted) {
+        ballot.querySelectorAll('input[name="candidate"]').forEach(input => { input.disabled = true; });
+        message.textContent = "Your vote has been recorded on this device. Thank you!";
+      }
+    }
+
+    ballot.addEventListener("submit", event => {
+      event.preventDefault();
+      if (state.hasVoted) return;
+
+      const selected = ballot.querySelector('input[name="candidate"]:checked');
+      if (!selected) {
+        message.textContent = "Please select a name before casting your vote.";
+        return;
+      }
+
+      state.votes[selected.value] += 1;
+      state.hasVoted = true;
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      } catch {
+        state.votes[selected.value] -= 1;
+        state.hasVoted = false;
+        message.textContent = "Your vote could not be saved in this browser. Check storage settings and try again.";
+        return;
+      }
+      renderResults();
+    });
+
+    renderResults();
+  </script>
+</body>
+</html>
